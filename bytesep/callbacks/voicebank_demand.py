@@ -11,8 +11,8 @@ import torch.nn as nn
 from pesq import pesq
 from pytorch_lightning.utilities import rank_zero_only
 
-from bytesep.callbacks.base import SaveCheckpointsCallback
-from bytesep.separate import Separator
+from bytesep.callbacks.base_callbacks import SaveCheckpointsCallback
+from bytesep.inference import Separator
 from bytesep.utils import StatisticsContainer, read_yaml
 
 
@@ -42,7 +42,7 @@ def get_voicebank_demand_callbacks(
     configs = read_yaml(config_yaml)
     task_name = configs['task_name']
     target_source_types = configs['train']['target_source_types']
-    input_channels = configs['train']['input_channels']
+    input_channels = configs['train']['channels']
     evaluation_audios_dir = os.path.join(workspace, "evaluation_audios", task_name)
     sample_rate = configs['train']['sample_rate']
     evaluate_step_frequency = configs['train']['evaluate_step_frequency']
@@ -67,10 +67,10 @@ def get_voicebank_demand_callbacks(
 
     # evaluation callback
     evaluate_test_callback = EvaluationCallback(
-        evaluation_audios_dir=evaluation_audios_dir,
-        sample_rate=sample_rate,
         model=model,
         input_channels=input_channels,
+        sample_rate=sample_rate,
+        evaluation_audios_dir=evaluation_audios_dir,
         segment_samples=test_segment_samples,
         batch_size=test_batch_size,
         device=evaluate_device,
@@ -87,10 +87,10 @@ def get_voicebank_demand_callbacks(
 class EvaluationCallback(pl.Callback):
     def __init__(
         self,
-        evaluation_audios_dir: str,
         model: nn.Module,
-        sample_rate: int,
         input_channels: int,
+        evaluation_audios_dir,
+        sample_rate: int,
         segment_samples: int,
         batch_size: int,
         device: str,
@@ -101,10 +101,10 @@ class EvaluationCallback(pl.Callback):
         r"""Callback to evaluate every #save_step_frequency steps.
 
         Args:
-            evaluation_audios_dir: str, directory containing audios for evaluation
             model: nn.Module
-            sample_rate: int
             input_channels: int
+            evaluation_audios_dir: str, directory containing audios for evaluation
+            sample_rate: int
             segment_samples: int, length of segments to be input to a model, e.g., 44100*30
             batch_size, int, e.g., 12
             device: str, e.g., 'cuda'

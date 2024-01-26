@@ -38,67 +38,134 @@ def plot_statistics(args):
 
     linewidth = 1
     lines = []
-    fig, ax = plt.subplots(1, 1, figsize=(7, 5))
-
-    eval_every_iterations = 10000
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
     if select == '1a':
         sdrs = load_sdrs(
             workspace,
             task_name,
             filename,
-            config='vocals-accompaniment,resunet_subbandtime',
-            gpus=2,
-            source_type='vocals',
+            config='vocals-accompaniment,unet',
+            gpus=1,
+            source_type="vocals",
         )
-        (line,) = ax.plot(sdrs, label='ResUNet_Subbandtime,vocals', linewidth=linewidth)
+        (line,) = ax.plot(sdrs, label='UNet,l1_wav', linewidth=linewidth)
         lines.append(line)
+        ylim = 15
+
+    elif select == '1b':
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='accompaniment-vocals,unet',
+            gpus=1,
+            source_type="accompaniment",
+        )
+        (line,) = ax.plot(sdrs, label='UNet,l1_wav', linewidth=linewidth)
+        lines.append(line)
+        ylim = 20
+
+    if select == '1c':
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='vocals-accompaniment,unet',
+            gpus=1,
+            source_type="vocals",
+        )
+        (line,) = ax.plot(sdrs, label='UNet,l1_wav', linewidth=linewidth)
+        lines.append(line)
+
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='vocals-accompaniment,resunet',
+            gpus=2,
+            source_type="vocals",
+        )
+        (line,) = ax.plot(sdrs, label='ResUNet_ISMIR2021,l1_wav', linewidth=linewidth)
+        lines.append(line)
+
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='vocals-accompaniment,unet_subbandtime',
+            gpus=1,
+            source_type="vocals",
+        )
+        (line,) = ax.plot(sdrs, label='unet_subband,l1_wav', linewidth=linewidth)
+        lines.append(line)
+
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='vocals-accompaniment,resunet_subbandtime',
+            gpus=1,
+            source_type="vocals",
+        )
+        (line,) = ax.plot(sdrs, label='resunet_subband,l1_wav', linewidth=linewidth)
+        lines.append(line)
+
+        ylim = 15
+
+    elif select == '1d':
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='accompaniment-vocals,unet',
+            gpus=1,
+            source_type="accompaniment",
+        )
+        (line,) = ax.plot(sdrs, label='UNet,l1_wav', linewidth=linewidth)
+        lines.append(line)
+
+        sdrs = load_sdrs(
+            workspace,
+            task_name,
+            filename,
+            config='accompaniment-vocals,resunet',
+            gpus=2,
+            source_type="accompaniment",
+        )
+        (line,) = ax.plot(sdrs, label='ResUNet_ISMIR2021,l1_wav', linewidth=linewidth)
+        lines.append(line)
+
+        # sdrs = load_sdrs(
+        #     workspace,
+        #     task_name,
+        #     filename,
+        #     config='accompaniment-vocals,unet_subbandtime',
+        #     gpus=1,
+        #     source_type="accompaniment",
+        # )
+        # (line,) = ax.plot(sdrs, label='UNet_subbtandtime,l1_wav', linewidth=linewidth)
+        # lines.append(line)
 
         sdrs = load_sdrs(
             workspace,
             task_name,
             filename,
             config='accompaniment-vocals,resunet_subbandtime',
-            gpus=2,
-            source_type='accompaniment',
+            gpus=1,
+            source_type="accompaniment",
         )
         (line,) = ax.plot(
-            sdrs, label='ResUNet_Subbandtime,accompaniment', linewidth=linewidth
-        )
-        lines.append(line)
-
-        sdrs = load_sdrs(
-            workspace,
-            task_name,
-            filename,
-            config='vocals-accompaniment,mobilenet_subbandtime',
-            gpus=2,
-            source_type='vocals',
-        )
-        (line,) = ax.plot(
-            sdrs, label='MobileNet_Subbandtime,vocals', linewidth=linewidth
-        )
-        lines.append(line)
-
-        sdrs = load_sdrs(
-            workspace,
-            task_name,
-            filename,
-            config='accompaniment-vocals,mobilenet_subbandtime',
-            gpus=2,
-            source_type='accompaniment',
-        )
-        (line,) = ax.plot(
-            sdrs, label='MobileNet_Subbandtime,accompaniment', linewidth=linewidth
+            sdrs, label='ResUNet_subbtandtime,l1_wav', linewidth=linewidth
         )
         lines.append(line)
 
         ylim = 20
-        eval_every_iterations = 10000
 
     else:
         raise Exception('Error!')
 
+    eval_every_iterations = 10000
     total_ticks = 50
     ticks_freq = 10
 
@@ -112,13 +179,10 @@ def plot_statistics(args):
             ticks_freq * eval_every_iterations,
         )
     )
-    ax.set_xlabel("Steps")
-    ax.set_ylabel("SDR (dB)")
     ax.yaxis.set_ticks(np.arange(ylim + 1))
     ax.yaxis.set_ticklabels(np.arange(ylim + 1))
     ax.grid(color='b', linestyle='solid', linewidth=0.3)
     plt.legend(handles=lines, loc=4)
-    plt.tight_layout(pad=0, h_pad=0, w_pad=0)
 
     plt.savefig(fig_path)
     print('Save figure to {}'.format(fig_path))

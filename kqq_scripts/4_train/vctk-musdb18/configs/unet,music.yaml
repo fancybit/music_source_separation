@@ -1,0 +1,61 @@
+---
+<<<<<<<< HEAD:scripts/4_train/violin-piano/configs/violin-piano,unet.yaml
+task_name: violin-piano
+train:
+    input_source_types:
+        - violin
+        - piano
+    target_source_types: 
+        - violin
+    indexes_dict: "indexes/violin-piano/sr=44100_chn=2/train/violin-piano.pkl"
+========
+task_name: vctk-musdb18
+train:
+    input_source_types:
+        - speech
+        - music
+    target_source_types: 
+        - music
+    indexes_dict: "indexes/vctk-musdb18/sr=44100_chn=2/train/speech-music.pkl"
+>>>>>>>> remotes/origin/kqq:kqq_scripts/4_train/vctk-musdb18/configs/unet,music.yaml
+    sample_rate: 44100
+    channels: 2
+    segment_seconds: 3.0
+    model_type: UNet
+    loss_type: l1_wav
+    mini_data: False
+    mixaudio:
+<<<<<<<< HEAD:scripts/4_train/violin-piano/configs/violin-piano,unet.yaml
+        violin: 1
+        piano: 1
+========
+        speech: 1
+        music: 1
+>>>>>>>> remotes/origin/kqq:kqq_scripts/4_train/vctk-musdb18/configs/unet,music.yaml
+    augmentation:
+        pitch_shift: 0
+        magnitude_scale:
+            lower_db: 0
+            higher_db: 0
+    batch_data_preprocessor: BasicBatchDataPreprocessor
+    evaluation_callback: Musdb18EvaluationCallback
+    learning_rate: 1e-3
+    batch_size: 16
+    precision: 32
+    steps_per_epoch: 10000  # Every 10000 steps is called an `epoch`.
+    evaluate_step_frequency: 10000     # Evaluate every #evaluate_step_frequency steps.
+    save_step_frequency: 50000  # Save every #save_step_frequency steps.
+    early_stop_steps: 500001
+    warm_up_steps: 1000
+    reduce_lr_steps: 15000
+    random_seed: 1234
+    resume_checkpoint: ""
+
+evaluate:
+<<<<<<<< HEAD:scripts/4_train/violin-piano/configs/violin-piano,unet.yaml
+    batch_size: 1
+    segment_seconds: 30.
+========
+    segment_seconds: 30.0
+    batch_size: 1
+>>>>>>>> remotes/origin/kqq:kqq_scripts/4_train/vctk-musdb18/configs/unet,music.yaml
