@@ -1,6 +1,6 @@
 #!/bin/bash
-MUSDB18_DATASET_DIR=${1:-"./datasets/musdb18"}  # The first argument is dataset directory.
-WORKSPACE=${2:-"./workspaces/bytesep"}  # The second argument is workspace directory.
+MUSDB18_DATASET_DIR="./datasets/musdb18"  # The first argument is dataset directory.
+WORKSPACE="./workspaces/bytesep"  # The second argument is workspace directory.
 
 echo "MUSDB18_DATASET_DIR=${MUSDB18_DATASET_DIR}"
 echo "WORKSPACE=${WORKSPACE}"
